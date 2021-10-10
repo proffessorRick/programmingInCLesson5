@@ -1,4 +1,3 @@
-// Include Header Here //
 #include "common.h"
 #include "main.h"
 #include "inputFunc.h"

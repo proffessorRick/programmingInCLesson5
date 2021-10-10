@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include "main.h"
+#include "mathFunc.h"
 #include "charFunc.h"
 
 void showNpcState(player *tha_playa, npc *tha_npc) {

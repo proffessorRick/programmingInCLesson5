@@ -5,15 +5,14 @@
 #include "main.h"
 #include "inputFunc.h"
 #include "charFunc.h"
-
-
+#include "mathFunc.h"
+#include "txtrFunc.h"
 
 // Make A Struct Array For Bullets //
 struct _bullet_ bullets[BULLET_COUNT];
 int bulletCounter = 0;
 
-
-//
+// Just Some Global Stuff //
 int moveX = 0;
 int moveY = 0;
 SDL_Window *window = NULL;
@@ -77,11 +76,6 @@ int main(int argc, char *argv[]) {
     // Also takes the mouse movement into account:
     update_player(&blorp, &mousepointer);
 
-    // Just for the giggles //
-    //zombie.x		= rand() % SCREEN_WIDTH;
-    //zombie.y		= rand() % SCREEN_HEIGHT;
-
-
     // # Actuator Output Buffering #
     // Also takes texture rotation into account:
     showPlayerState(&blorp);
@@ -102,13 +96,10 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-
-// A New Function To Shoot That Bloody Pistol //
 void makeBullet(player *tha_playa) {
   if (bulletCounter == BULLET_COUNT) bulletCounter = 0;
   bulletCounter++;
   
-  // Make A bullet And Set All It's Values // 
   bullet bulletPointer;
   
   bulletPointer.bulletCount = bulletCounter;
@@ -122,7 +113,6 @@ void makeBullet(player *tha_playa) {
   bulletPointer.txtr_bullet = load_texture("gfx/bullet20x5.png");
   bulletPointer.angle = tha_playa->angle;
 
-  // Insert The Bullet In The Bullet Array //
   bullets[bulletPointer.bulletCount] = bulletPointer;
   tha_playa->gunstate = 1;
 }
@@ -140,8 +130,6 @@ void travelBullet() {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-// The Function createMuzzleFlash Is For Generating And Editing The Muzzle Flash //
 void createMuzzleFlash(player *tha_playa) {
   // Calculate Angle //
   double angle = ((tha_playa->angle / 180) * PI);
@@ -164,80 +152,4 @@ void createMuzzleFlash(player *tha_playa) {
   tha_playa->gunstate = 0;
 
   for (int delay = 0; delay < 1000; delay++);
-}
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
- 
-SDL_Texture *load_texture(char *filename) {
-  SDL_Texture *txtr;
-  txtr = IMG_LoadTexture(renderer, filename);
-  return txtr;
-}
-
-void blit(SDL_Texture *txtr, int x, int y, int center) {
-  SDL_Rect dest;
-  dest.x = x;
-  dest.y = y;
-
-  SDL_QueryTexture(txtr, NULL, NULL, &dest.w, &dest.h);
-
-  // If center != 0, render texture with its center on (x,y), NOT
-  // with its top-left corner...
-  if (center) {
-    dest.x -= dest.w / 2;
-    dest.y -= dest.h / 2;
-  }
-
-  SDL_RenderCopy(renderer, txtr, NULL, &dest);
-}
-
-void blit_angled(SDL_Texture *txtr, int x, int y, float angle) {
-  SDL_Rect dest;
-  dest.x = x;
-  dest.y = y;
-
-  SDL_QueryTexture(txtr, NULL, NULL, &dest.w, &dest.h);
-
-  // Textures that are rotated MUST ALWAYS be rendered with their
-  // center at (x, y) to have a symmetrical center of rotation:
-  dest.x -= (dest.w / 2);
-  dest.y -= (dest.h / 2);
-
-  // Look up what this function does. What do these rectangles
-  // mean? Why is the source rectangle NULL? What are acceptable
-  // values for the `angle' parameter?
-  SDL_RenderCopyEx(renderer, txtr, NULL, &dest, angle, NULL, SDL_FLIP_NONE);
-}
-
-float get_angle(int x1, int y1, int x2, int y2, SDL_Texture *txtr) {
-  // We Make Sure We Have Our Variables //
-  double pythagoras, sinusRule, arcTangus = 0;
-  int h = 0;
-
-  // We Want To Know Where Blorp Is //
-  SDL_QueryTexture(txtr, NULL, NULL, NULL, &h);
-
-  // Just To Keep Everything A Bit Organized //
-  double answerA, answerB;
-  
-  // We Use Pyhtagaros To Calculate A Diagonal Distance Between Blorp And Mouse //
-  answerA = pow((x2 - x1), 2);
-  answerB = pow((y2 - y1), 2);
-  pythagoras = sqrt(answerA + answerB);
-
-  // After That We Use pythagoras And The Sinus Rule To Calulate Our Degree //
-  answerA = h / 3.75;
-  answerB = sin(90) / pythagoras;
-  sinusRule = asin(answerA * answerB);
-
-  // Now We Calculte It's Opposite //
-  answerA = y2 - y1;
-  answerB = x2 - x1;
-  arcTangus = atan2(answerA, answerB);
-
-  // We Calculate All Our Results And Transform It Into Degrees //
-  answerA = arcTangus - sinusRule;
-  answerB = 180 / PI;
-  return (float)(answerA * answerB);
 }
