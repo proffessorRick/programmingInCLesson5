@@ -16,8 +16,5 @@ mathFunc.o: mathFunc.c mathFunc.h common.h
 txtrFunc.o: txtrFunc.c txtrFunc.h common.h
 	gcc -std=c99 -Wall -Wextra -Wconversion -Wpedantic txtrFunc.c `sdl2-config --cflags --libs` -lSDL2_image -lm -o txtrFunc.o -c
 
-clearProgram:
-	rm -rf program
-
-clearFiles:
-	rm -rf *.o
+clean:
+	rm -rf program *.o
